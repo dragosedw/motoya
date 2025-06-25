@@ -482,7 +482,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
     if (!doc.exists || doc.data().tipo !== "cliente") {
       alert("Acceso no autorizado");
       firebase.auth().signOut();
-      window.location.href = "../login.html";
+      window.location.href = "../index.html";
       return;
     }
     currentUser = user;
@@ -497,7 +497,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
 });
 
 function logout() {
-  firebase.auth().signOut().then(() => (window.location.href = "../login.html"));
+  firebase.auth().signOut().then(() => (window.location.href = "../index.html"));
 }
 
 // ------------------ UBICACIÓN EN TIEMPO REAL ------------------
