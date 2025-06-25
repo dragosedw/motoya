@@ -54,9 +54,9 @@ const notificaciones = document.getElementById('listaNotificaciones');
 if (notificaciones) notificaciones.innerHTML = "...";
 
 // 📊 Actualizar Dashboard (global)
-window.actualizarDashboard = function () {
+window.actualizarDashboard = async function () {
   const pedidosNuevos = obtenerCantidadPedidosNuevos();
-  const chatsNuevos = obtenerCantidadChatsNuevos();
+  const chatsNuevos = await obtenerCantidadChatsNuevos(); // <-- await
   const comisionesPendientes = obtenerComisionesPendientes();
 
   const pedidosElem = document.getElementById("contadorPedidos");
@@ -66,7 +66,18 @@ window.actualizarDashboard = function () {
   if (pedidosElem) pedidosElem.textContent = pedidosNuevos;
   if (mensajesElem) mensajesElem.textContent = chatsNuevos;
   if (comisionesElem) comisionesElem.textContent = comisionesPendientes;
+
+  const badgeMensajes = document.getElementById("badgeMensajes");
+  if (badgeMensajes) {
+    if (chatsNuevos > 0) {
+      badgeMensajes.textContent = chatsNuevos;
+      badgeMensajes.classList.remove('hidden');
+    } else {
+      badgeMensajes.classList.add('hidden');
+    }
+  }
 };
+
 
 function obtenerCantidadPedidosNuevos() {
   if (!Array.isArray(window.pedidos)) return 0;
