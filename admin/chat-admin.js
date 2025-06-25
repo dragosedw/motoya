@@ -1,5 +1,5 @@
 // ===================== CHAT ADMINISTRADOR (INTEGRADO CON REPARTIDORES Y CLIENTES) =====================
-let adminUid = null;
+ adminUid = null;
 let usuarioSeleccionado = null;
 let unsubscribeChat = null;
 
