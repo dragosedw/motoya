@@ -1,7 +1,9 @@
 // ===================== CHAT ADMINISTRADOR (INTEGRADO CON REPARTIDORES Y CLIENTES) =====================
  adminUid = null;
-let usuarioSeleccionado = null;
-let unsubscribeChat = null;
+
+window.usuarioSeleccionado = null;
+
+window.usnsubscribeChat = null;
 
 // Cargar usuarios cuando se abre la pestaña de chat
 document.addEventListener("DOMContentLoaded", () => {
