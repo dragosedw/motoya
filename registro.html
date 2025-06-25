@@ -52,7 +52,7 @@
     </form>
 
     <div class="text-center text-sm mt-4">
-      <a href="login.html" class="text-red-500 hover:underline">¿Ya tienes cuenta? Inicia sesión</a>
+      <a href="index.html" class="text-red-500 hover:underline">¿Ya tienes cuenta? Inicia sesión</a>
     </div>
   </div>
 
@@ -73,58 +73,73 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    async function registrar() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const apellido = document.getElementById("apellido").value.trim();
-      const telefono = document.getElementById("telefono").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmar = document.getElementById("confirmPassword").value;
-      const tipo = document.getElementById("tipo").value;
 
-      if (!nombre || !apellido || !telefono || !email || !password || !confirmar) {
-        alert("Completa todos los campos.");
-        return;
-      }
+  async function registrar() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmar = document.getElementById("confirmPassword").value;
+    const tipo = document.getElementById("tipo").value;
 
-      if (password !== confirmar) {
-        alert("Las contraseñas no coinciden.");
-        return;
-      }
+    // Validación básica
+    if (!nombre || !apellido || !telefono || !email || !password || !confirmar) {
+      alert("Completa todos los campos.");
+      return;
+    }
 
-      try {
-        const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        await cred.user.sendEmailVerification();
+    if (password.length < 6) {
+      alert("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
 
-        const uid = cred.user.uid;
-        await db.collection("usuarios").doc(uid).set({
-          uid,
-          nombre,
-          apellido,
-          telefono,
-          email,
-          tipo,
-          creado: firebase.firestore.FieldValue.serverTimestamp()
-        });
+    if (password !== confirmar) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
 
-        alert("Registro exitoso. Verifica tu correo.");
-        firebase.auth().signOut();
-        window.location.href = "login.html";
-      } catch (error) {
+    try {
+      // Crear cuenta en Firebase Authentication
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      const uid = userCredential.user.uid;
+
+      // Guardar datos adicionales en Firestore
+      await db.collection("usuarios").doc(uid).set({
+        nombre,
+        apellido,
+        telefono,
+        email,
+        tipo,
+        creado: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Registro exitoso. Ahora puedes iniciar sesión.");
+      window.location.href = "index.html"; // Redirige al login
+
+    } catch (error) {
+      console.error("Error registrando usuario:", error);
+      if (error.code === "auth/email-already-in-use") {
+        alert("El correo ya está registrado.");
+      } else if (error.code === "auth/invalid-email") {
+        alert("Correo inválido.");
+      } else {
         alert("Error: " + error.message);
       }
     }
-  
-    function togglePassword(inputId, btn) {
-      const input = document.getElementById(inputId);
-      if (input.type === "password") {
-        input.type = "text";
-        btn.textContent = "Ocultar";
-      } else {
-        input.type = "password";
-        btn.textContent = "Ver";
-      }
+  }
+
+  function togglePassword(id, button) {
+    const input = document.getElementById(id);
+    if (input.type === "password") {
+      input.type = "text";
+      button.textContent = "Ocultar";
+    } else {
+      input.type = "password";
+      button.textContent = "Ver";
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
