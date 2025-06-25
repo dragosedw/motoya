@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => mostrarTab("activos"));
 // Autenticación y carga de datos
 firebase.auth().onAuthStateChanged(async (user) => {
   if (!user) {
-    window.location.href = "../login.html";
+    window.location.href = "../index.html";
     return;
   }
 
@@ -49,7 +49,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
 
     if (!doc.exists) {
       await firebase.auth().signOut();
-      window.location.href = "../login.html";
+      window.location.href = "../index.html";
       return;
     }
 
@@ -57,7 +57,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
 
     if (data.tipo !== "repartidor") {
       await firebase.auth().signOut();
-      window.location.href = "../login.html";
+      window.location.href = "../index.html";
       return;
     }
 
@@ -84,7 +84,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
     console.error("Error validando usuario:", error);
     alert("Error al validar usuario. Intenta nuevamente.");
     await firebase.auth().signOut();
-    window.location.href = "../login.html";
+    window.location.href = "../index.html";
   }
 });
 
@@ -425,7 +425,7 @@ function iniciarRastreoGPS() {
 // Logout
 function logout() {
   firebase.auth().signOut()
-    .then(() => window.location.href = "../login.html")
+    .then(() => window.location.href = "../index.html")
     .catch(error => alert("Error al cerrar sesión: " + error.message));
 }
 
