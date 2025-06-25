@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro - MotoYa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-red-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <div class="text-center mb-6">
+      <img src="logo.png" alt="Logo MotoYa" class="mx-auto w-20 h-20 mb-2">
+      <h2 class="text-2xl font-bold text-red-600">Crear cuenta</h2>
+    </div>
+
+    <form id="registroForm">
+      <div>
+        <label for="nombre" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+        <input id="nombre" type="text" placeholder="Nombre" class="w-full mb-3 p-2 border rounded" />
+      </div>
+      <div>
+        <label for="apellido" class="block text-gray-700 text-sm font-bold mb-2">Apellido</label>
+        <input id="apellido" type="text" placeholder="Apellido" class="w-full mb-3 p-2 border rounded" />
+      </div>
+      <div>
+        <label for="telefono" class="block text-gray-700 text-sm font-bold mb-2">Teléfono</label>
+        <input id="telefono" type="tel" placeholder="Teléfono" class="w-full mb-3 p-2 border rounded" />
+      </div>
+      <div>
+        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Correo electrónico</label>
+        <input id="email" type="email" placeholder="Correo electrónico" class="w-full mb-3 p-2 border rounded" />
+      </div>
+      <div class="relative mb-3">
+        <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
+        <input id="password" type="password" placeholder="Contraseña" class="w-full p-2 border rounded" />
+        <button type="button" onclick="togglePassword('password', this)" class="absolute right-2 top-9 text-sm text-gray-500">Ver</button>
+      </div>
+      <div class="relative mb-3">
+        <label for="confirmPassword" class="block text-gray-700 text-sm font-bold mb-2">Confirmar contraseña</label>
+        <input id="confirmPassword" type="password" placeholder="Confirmar contraseña" class="w-full p-2 border rounded" />
+        <button type="button" onclick="togglePassword('confirmPassword', this)" class="absolute right-2 top-9 text-sm text-gray-500">Ver</button>
+      </div>
+      <div>
+        <label for="tipo" class="block text-gray-700 text-sm font-bold mb-2">Tipo de cuenta</label>
+        <select id="tipo" class="w-full mb-3 p-2 border rounded">
+          <option value="cliente">Cliente</option>
+          <option value="repartidor">Repartidor</option>
+        </select>
+      </div>
+
+      <button type="button" onclick="registrar()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Registrarse</button>
+    </form>
+
+    <div class="text-center text-sm mt-4">
+      <a href="login.html" class="text-red-500 hover:underline">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZk3Surd5Xyjj-58gInYk5VD8CB2xguME",
+      authDomain: "motoya-cd83b.firebaseapp.com",
+      projectId: "motoya-cd83b",
+      storageBucket: "motoya-cd83b.appspot.com",
+      messagingSenderId: "524670121243",
+      appId: "1:524670121243:web:72f3dcc70d0a38b3f10fbe"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function registrar() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const apellido = document.getElementById("apellido").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmar = document.getElementById("confirmPassword").value;
+      const tipo = document.getElementById("tipo").value;
+
+      if (!nombre || !apellido || !telefono || !email || !password || !confirmar) {
+        alert("Completa todos los campos.");
+        return;
+      }
+
+      if (password !== confirmar) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        await cred.user.sendEmailVerification();
+
+        const uid = cred.user.uid;
+        await db.collection("usuarios").doc(uid).set({
+          uid,
+          nombre,
+          apellido,
+          telefono,
+          email,
+          tipo,
+          creado: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert("Registro exitoso. Verifica tu correo.");
+        firebase.auth().signOut();
+        window.location.href = "login.html";
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    }
+  
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "Ocultar";
+      } else {
+        input.type = "password";
+        btn.textContent = "Ver";
+      }
+    }
+  </script>
+</body>
+</html>
