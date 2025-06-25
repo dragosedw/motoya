@@ -1,7 +1,7 @@
 // 🔐 Verificación de autenticación y rol administrador
 auth.onAuthStateChanged(async user => {
   if (!user) {
-    location.href = '../login.html';
+    location.href = '../index.html';
     return;
   }
 
@@ -12,7 +12,7 @@ auth.onAuthStateChanged(async user => {
     if (!doc.exists || doc.data().tipo !== 'administrador') {
       alert('Acceso no autorizado');
       await auth.signOut();
-      location.href = '../login.html';
+      location.href = '../index.html';
     } else {
       // ✅ Cargar comisiones antes de actualizar dashboard
       try {
@@ -30,7 +30,7 @@ auth.onAuthStateChanged(async user => {
     console.error('🔥 Error al verificar usuario:', error.message, error.stack, error);
     alert(`Error al verificar usuario:\n${error.message}`);
     await auth.signOut();
-    location.href = '../login.html';
+    location.href = '../index.html';
   }
 });
 
