@@ -214,9 +214,14 @@
   <button class="tab-button" data-tab="pedidosOcultos" role="tab" aria-selected="false" id="tab-pedidosOcultos">
     Pedidos Ocultos
   </button>
-  <button class="tab-button" data-tab="chatAdmin" role="tab" aria-selected="false" id="tab-chatAdmin">
-    Chat Admin
-  </button>
+  <button data-tab="chatAdmin" class="tab-button relative">
+  Chat admin
+  <span id="badgeMensajes"
+        class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs rounded-full px-2 hidden">
+    0
+  </span>
+</button>
+
 </nav>
 
     <!-- Tab Panels -->
