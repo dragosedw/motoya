@@ -113,7 +113,7 @@ async function asignarPedido(pedidoId) {
 
     mostrarAlerta("Pedido asignado correctamente.", "success");
     cargarPedidos();
-    cargarDashboard();
+    cargarDatosDashboard();
   } catch (error) {
     mostrarAlerta("Ocurrió un error al asignar el pedido.", "error");
     mostrarErrorSistema("Error al asignar pedido: " + (error.message || error));
@@ -130,7 +130,7 @@ async function marcarComoEntregado(pedidoId) {
     });
     mostrarAlerta("Pedido marcado como entregado.", "success");
     cargarPedidos();
-    cargarDashboard();
+    cargarDatosDashboard();
   } catch (error) {
     mostrarAlerta("Error al marcar como entregado.", "error");
     mostrarErrorSistema("Error al marcar como entregado: " + (error.message || error));
