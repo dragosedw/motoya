@@ -247,7 +247,7 @@ document.getElementById('formAsignarPedido').addEventListener('submit', async (e
     mostrarAlerta("Pedido asignado correctamente.", "success");
     cerrarModal('modalAsignarPedido');
     cargarPedidos();
-    cargarDashboard();
+    cargarDatosDashboard()
   } catch (error) {
     mostrarAlerta("Error al asignar pedido.", "error");
     console.error(error);
