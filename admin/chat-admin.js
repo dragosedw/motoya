@@ -3,7 +3,7 @@
 
 window.usuarioSeleccionado = null;
 
-window.usnsubscribeChat = null;
+usnsubscribeChat = null;
 
 // Cargar usuarios cuando se abre la pestaña de chat
 document.addEventListener("DOMContentLoaded", () => {
