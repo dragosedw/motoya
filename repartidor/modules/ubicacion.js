@@ -1,6 +1,6 @@
 // src/gps/ubicacion.js
 
-import { db } from "../firebase/init.js";
+import { db } from "../modules/init.js";
 
 export function iniciarRastreoGPS(uidRepartidor) {
   if (!navigator.geolocation) {
