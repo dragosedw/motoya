@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Cliente - MotoYa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" />
+
+  <style>
+    #chatAdminBtn .noti-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 14px;
+      height: 14px;
+      background: #22c55e;
+      border-radius: 9999px;
+      border: 2px solid white;
+      z-index: 10;
+      display: none;
+    }
+
+    #chatAdminBtn.noti .noti-dot {
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="p-4 bg-white shadow-md flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-red-600">Panel Cliente</h1>
+    <button onclick="logout()" class="text-sm bg-red-600 text-white px-4 py-2 rounded">Cerrar sesión</button>
+  </header>
+
+  <main class="p-4 max-w-3xl mx-auto">
+
+    <!-- Datos del cliente -->
+    <section class="mb-8">
+      <h2 class="text-xl font-bold mb-2">Mis datos</h2>
+      <div id="datosCliente" class="bg-white shadow rounded p-4"></div>
+    </section>
+
+    <!-- Nuevo pedido -->
+    <section class="mb-8">
+      <h2 class="text-xl font-bold mb-2">Nuevo pedido</h2>
+
+      <div id="opcionesServicio" class="mb-4 hidden space-x-2"></div>
+
+      <button id="btnSolicitarPedido" onclick="UI.mostrarOpcionesServicio()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        <i class="fas fa-plus mr-2"></i> Solicitar pedido
+      </button>
+
+      <div id="cambiarServicioDiv" class="mb-2 hidden">
+        <button onclick="UI.cambiarTipoServicio()" class="bg-gray-300 text-gray-800 px-3 py-1 rounded hover:bg-gray-400 text-sm">
+          <i class="fas fa-arrow-left mr-1"></i> Cambiar tipo de servicio
+        </button>
+      </div>
+
+      <form id="formularioPedido" class="mt-4 hidden bg-white shadow rounded p-4" onsubmit="Pedidos.enviarPedido(event)">
+        <input type="hidden" id="tipoServicio" />
+
+        <div class="mb-4">
+          <label for="direccion" class="block text-gray-700 text-sm font-bold mb-2">Dirección de entrega</label>
+          <input type="text" id="direccion" placeholder="Ej: Calle Principal #123" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+
+        <div class="mb-4">
+          <label for="descripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción del pedido</label>
+          <textarea id="descripcion" placeholder="Ej: 2 hamburguesas, 1 refresco" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+
+        <div class="mb-4">
+          <button type="button" onclick="Pedidos.obtenerUbicacion()" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+            <i class="fas fa-location-arrow mr-1"></i> Usar mi ubicación actual
+          </button>
+          <div id="ubicacionStatus" class="text-xs text-gray-600 mt-1"></div>
+          <input type="hidden" id="latitud" />
+          <input type="hidden" id="longitud" />
+        </div>
+
+        <div id="servicioSeleccionado" class="mb-4 text-sm font-semibold text-gray-700"></div>
+
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          <i class="fas fa-paper-plane mr-2"></i> Enviar pedido
+        </button>
+      </form>
+    </section>
+
+    <!-- Listado de pedidos -->
+    <section>
+      <h2 class="text-xl font-bold mb-2">Mis pedidos</h2>
+      <div class="mb-4">
+        <label class="inline-flex items-center">
+          <input type="checkbox" id="mostrarPedidosOcultos" onchange="Pedidos.cargarPedidos()" class="form-checkbox h-4 w-4 text-red-600">
+          <span class="ml-2 text-gray-700 text-sm">Mostrar pedidos cancelados y entregados</span>
+        </label>
+      </div>
+      <div id="listaPedidos" class="space-y-4"></div>
+    </section>
+  </main>
+
+  <!-- Botón flotante de chat -->
+  <div id="chatAdminBtn" onclick="ChatAdmin.abrirChatAdmin()" class="fixed bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white rounded-full px-5 py-3 flex items-center justify-center shadow-lg cursor-pointer z-50 transition-all duration-200 noti">
+    <i class="fas fa-comments text-2xl mr-2"></i>
+    <span class="font-semibold">Chat con el administrador</span>
+    <span class="noti-dot"></span>
+  </div>
+
+  <!-- Ventana de chat -->
+  <div id="chatAdminBox" class="fixed bottom-24 right-6 bg-white border border-red-600 rounded-lg shadow-lg w-80 max-w-full hidden z-50">
+    <div class="flex items-center justify-between bg-red-600 text-white px-4 py-2 rounded-t-lg">
+      <span class="font-semibold">Chat con el administrador</span>
+      <button onclick="ChatAdmin.cerrarChatAdmin()" class="text-white hover:text-gray-200 text-xl">&times;</button>
+    </div>
+    <div id="mensajesChatAdmin" class="h-60 overflow-y-auto p-3 bg-gray-50"></div>
+    <form onsubmit="ChatAdmin.enviarMensajeChatAdmin(); return false;" class="flex p-2 border-t">
+      <input id="inputChatAdmin" class="flex-1 border rounded px-2 py-1 mr-2" placeholder="Escribe un mensaje..." autocomplete="off" />
+      <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Enviar</button>
+    </form>
+  </div>
+
+  <!-- Audios -->
+  <audio id="chatAlertAudio" src="noti.mp3" preload="auto"></audio>
+  <audio id="notiSonido" src="noti.mp3" preload="auto"></audio>
+
+  <!-- Firebase -->
+   
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>

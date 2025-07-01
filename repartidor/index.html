@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Pedidos asignados - Repartidor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    #chatAdminBtn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background-color: #dc2626; /* rojo */
+      color: white;
+      border-radius: 9999px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.5);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      min-width: 56px;
+      z-index: 50;
+    }
+
+    #chatAdminBtn:hover {
+      background-color: #b91c1c; /* rojo oscuro */
+    }
+
+    #chatAdminBtn .noti-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 14px;
+      height: 14px;
+      background: #22c55e; /* verde */
+      border-radius: 9999px;
+      border: 2px solid white;
+      z-index: 60;
+      display: none;
+    }
+
+    #chatAdminBtn.noti .noti-dot {
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen p-6">
+
+  <div id="contenido" class="max-w-3xl mx-auto bg-white shadow-md p-6 rounded">
+    <h1 class="text-2xl font-bold text-red-600 mb-4">Mis pedidos</h1>
+    <div class="flex justify-end mb-4">
+      <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+        Cerrar sesión
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex mb-4 border-b">
+      <button id="tabActivos" onclick="mostrarTab('activos')" class="px-4 py-2 font-semibold border-b-2 border-red-600 text-red-600">Activos</button>
+      <button id="tabEntregados" onclick="mostrarTab('entregados')" class="px-4 py-2 font-semibold text-gray-600">Entregados</button>
+    </div>
+
+    <!-- Pedidos activos -->
+    <div id="panelActivos">
+      <div id="contadorPedidosHoy" class="mb-4 text-lg font-semibold text-green-700">Cargando...</div>
+      <div id="pedidosContainer" class="space-y-4"></div>
+    </div>
+
+    <!-- Pedidos entregados -->
+    <div id="panelEntregados" class="hidden">
+      <div id="resumenComisiones" class="mb-4 text-blue-700 font-semibold"></div>
+      <div id="pedidosEntregadosContainer" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Mensaje de no aprobado (oculto inicialmente) -->
+  <div id="mensajeNoAprobado"
+    class="max-w-3xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative hidden"
+    role="alert">
+    <strong class="font-bold">Cuenta no aprobada</strong>
+    <span class="block sm:inline">Tu cuenta aún no ha sido aprobada por un administrador. Por favor, espera la
+      aprobación para acceder al panel.</span>
+  </div>
+
+  <!-- Chat con Administrador (flotante) -->
+  <div id="chatAdminBtn" onclick="abrirChatAdmin()" class="noti">
+    <i class="fas fa-comments text-2xl mr-2"></i>
+    <span class="font-semibold">Chat con el administrador</span>
+    <span class="noti-dot"></span>
+  </div>
+
+  <div id="chatAdminBox"
+       class="fixed bottom-24 right-6 bg-white border border-red-600 rounded-lg shadow-lg w-80 max-w-full hidden z-50">
+    <div class="flex items-center justify-between bg-red-600 text-white px-4 py-2 rounded-t-lg">
+      <span class="font-semibold">Chat con el administrador</span>
+      <button onclick="cerrarChatAdmin()" class="text-white hover:text-gray-200 text-xl">&times;</button>
+    </div>
+    <div id="mensajesChatAdmin" class="h-60 overflow-y-auto p-3 bg-gray-50"></div>
+    <form onsubmit="enviarMensajeChatAdmin(); return false;" class="flex p-2 border-t">
+      <input id="inputChatAdmin" class="flex-1 border rounded px-2 py-1 mr-2" placeholder="Escribe un mensaje..." autocomplete="off" />
+      <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Enviar</button>
+    </form>
+  </div>
+
+
+  <!-- Audios para alertas -->
+  <audio id="chatAlertAudio" src="noti.mp3" preload="auto"></audio>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Archivo JS externo -->
+  
+<script type="module" src="./main.js"></script>
+
+
+<!-- Notificación visual -->
+<div id="notiVisual" class="fixed bottom-6 right-6 bg-white border-l-4 border-red-600 shadow-lg p-4 rounded-lg w-72 z-50 hidden animate-fade-in">
+  <div class="text-red-600 font-bold mb-1">¡Nuevo mensaje!</div>
+  <div id="notiVisualTexto" class="text-gray-700 text-sm">Tienes un nuevo mensaje.</div>
+</div>
+
+<style>
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadein 0.3s ease-out;
+  }
+</style>
+
+</body>
+
+</html>
