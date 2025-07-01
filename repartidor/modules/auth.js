@@ -1,5 +1,5 @@
 // src/auth/auth.js
-import { auth } from "../firebase/init.js";
+import { auth } from "../modules/init.js";
 
 export async function obtenerRepartidorUID() {
   return new Promise((resolve, reject) => {
