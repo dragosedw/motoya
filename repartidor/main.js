@@ -1,12 +1,12 @@
 // src/main.js
 
-import { obtenerRepartidorUID } from "./auth/auth.js";
-import { configurarTabs } from "./ui/tabs.js";
-import { db } from "./firebase/init.js";
-import { crearCardPedido } from "./ui/cardPedido.js";
-import { generarBotonEntregar, escucharBotonesEntregar } from "./pedidos/activos.js";
-import { iniciarRastreoGPS } from "./gps/ubicacion.js";
-import { iniciarChatAdmin } from "./chat/chatAdmin.js";
+import { obtenerRepartidorUID } from "./modules/auth.js";
+import { configurarTabs } from "./modules/tabs.js";
+import { db } from "./modules/init.js";
+import { crearCardPedido } from "./modules/cardPedido.js";
+import { generarBotonEntregar, escucharBotonesEntregar } from "./modules/activos.js";
+import { iniciarRastreoGPS } from "./modules/ubicacion.js";
+import { iniciarChatAdmin } from "./modules/chatAdmin.js";
 
 async function initApp() {
   try {
@@ -48,5 +48,54 @@ async function cargarPedidos(uid, estado) {
     contenedor.innerHTML = "<p>Error al cargar pedidos.</p>";
   }
 }
+
+window.mostrarTab = (tab) => {
+  const panelActivos = document.getElementById("panelActivos");
+  const panelEntregados = document.getElementById("panelEntregados");
+  const tabActivos = document.getElementById("tabActivos");
+  const tabEntregados = document.getElementById("tabEntregados");
+
+  if (tab === "activos") {
+    panelActivos.classList.remove("hidden");
+    panelEntregados.classList.add("hidden");
+    tabActivos.classList.add("border-red-600", "text-red-600");
+    tabEntregados.classList.remove("border-red-600", "text-red-600");
+  } else {
+    panelActivos.classList.add("hidden");
+    panelEntregados.classList.remove("hidden");
+    tabActivos.classList.remove("border-red-600", "text-red-600");
+    tabEntregados.classList.add("border-red-600", "text-red-600");
+  }
+};
+
+window.abrirChatAdmin = () => {
+  document.getElementById("chatAdminBox").classList.remove("hidden");
+};
+
+window.cerrarChatAdmin = () => {
+  document.getElementById("chatAdminBox").classList.add("hidden");
+};
+
+window.logout = () => {
+  firebase.auth().signOut().then(() => {
+    location.href = "login.html";
+  });
+};
+
+window.enviarMensajeChatAdmin = () => {
+  const input = document.getElementById("inputChatAdmin");
+  const mensaje = input.value.trim();
+  if (mensaje === "") return;
+
+  const mensajesChat = document.getElementById("mensajesChatAdmin");
+  const div = document.createElement("div");
+  div.className = "p-2 bg-red-100 rounded mb-1";
+  div.textContent = mensaje;
+  mensajesChat.appendChild(div);
+  input.value = "";
+
+  // Aquí puedes agregar lógica para enviar el mensaje a Firestore si quieres
+};
+
 
 initApp();
