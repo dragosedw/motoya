@@ -3,10 +3,11 @@
 import { obtenerRepartidorUID } from "./modules/auth.js";
 import { configurarTabs } from "./modules/tabs.js";
 import { db } from "./modules/init.js";
-import { crearCardPedido } from "./modules/cardPedido.js";
-import { generarBotonEntregar, escucharBotonesEntregar } from "./modules/activos.js";
+import { crearCardPedido } from "./modules/cardpedido.js";
+import { generarBotonEntregar, escucharBotonesEntregar } from "./modules/pedidosactivos.js";
 import { iniciarRastreoGPS } from "./modules/ubicacion.js";
 import { iniciarChatAdmin } from "./modules/chatAdmin.js";
+import { iniciarChatCliente } from "./modules/chatCliente.js";
 
 async function initApp() {
   try {
