@@ -79,7 +79,7 @@ window.cerrarChatAdmin = () => {
 
 window.logout = () => {
   firebase.auth().signOut().then(() => {
-    location.href = "login.html";
+    location.href = "index.html";
   });
 };
 
