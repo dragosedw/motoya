@@ -1,6 +1,6 @@
 // src/chat/chatCliente.js
 
-import { db } from "../firebase/init.js";
+import { db } from "../modules/init.js";
 
 export async function cargarMensajes(idPedido, contenedor) {
   const chatRef = db.collection("pedidos").doc(idPedido).collection("chat");
