@@ -1,6 +1,6 @@
 // src/pedidos/activos.js
 
-import { db } from "../firebase/init.js";
+import { db } from "../modules/init.js";
 
 export function generarBotonEntregar(idPedido) {
   return `
